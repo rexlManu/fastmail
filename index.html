@@ -80,7 +80,7 @@
               class="collapse"
               v-bind:class="{ show: message.show }"
             >
-              <div class="card-body">{{ message.body }}</div>
+              <div class="card-body" v-html="message.body"></div>
             </div>
           </div>
         </div>
