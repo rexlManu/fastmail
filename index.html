@@ -134,6 +134,7 @@
             this.username = "";
             this.password = "";
             location.hash = "";
+            this.messages = [];
           },
           fetchMessages() {
             fetch("/api/mails", {
