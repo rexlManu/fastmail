@@ -5,6 +5,8 @@ const port = process.env.PORT;
 const path = require("path");
 const utils = require("./utils");
 const rateLimit = require("express-rate-limit");
+var http = require('http');
+var server = http.createServer(app);
 
 const { ImapFlow } = require("imapflow");
 
@@ -145,6 +147,7 @@ app.post("/api/mails", async (req, res) => {
 
 client.connect();
 
-app.listen(port, async () => {
-  console.log(`Fastmail app listening at http://localhost:${port}`);
-});
+server.on('listening', () => {
+    console.log(`Fastmail app listening at http://${process.env.HOST}:${port}`);
+})
+server.listen(port, process.env.HOST);
