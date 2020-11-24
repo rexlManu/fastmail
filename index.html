@@ -26,130 +26,185 @@
       }
     </style>
   </head>
-  <body class="">
-    <nav class="navbar navbar-expand-md navbar-dark bg-primary fixed-top">
-      <a class="navbar-brand" href="#">FastMail</a>
-      <button
-        class="navbar-toggler"
-        type="button"
-        data-toggle="collapse"
-        data-target="#navbarsExampleDefault"
-        aria-controls="navbarsExampleDefault"
-        aria-expanded="false"
-        aria-label="Toggle navigation"
-      >
-        <span class="navbar-toggler-icon"></span>
-      </button>
+  <body>
+    <div id="app">
+      <nav class="navbar navbar-expand-md navbar-dark bg-primary fixed-top">
+        <a class="navbar-brand" href="#">FastMail</a>
+        <button class="navbar-toggler" type="button">
+          <span class="navbar-toggler-icon"></span>
+        </button>
 
-      <div class="collapse navbar-collapse" id="navbarsExampleDefault">
-        <ul class="navbar-nav mr-auto">
-          <li class="nav-item active">
-            <a class="nav-link" href="https://fastmail.email">Generator</a>
-          </li>
-        </ul>
-        <a
-          class="btn btn-outline-light"
-          href="https://github.com/rexlManu/fastmail"
-          >Github</a
-        >
-      </div>
-    </nav>
-    <div class="container pt-5" id="app">
-      <div class="mt-5">
-        <div class="card">
-          <div class="card-header bg-primary text-white">Generate mail</div>
-          <div class="card-body">
-            <div class="form-group">
-              <label
-                >Username
-                <span class="text-muted"
-                  >(Has no use except as Fake It replacement)</span
-                ></label
+        <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+          <ul class="navbar-nav mr-auto">
+            <li class="nav-item" v-bind:class="{ active: !history }">
+              <a
+                class="nav-link"
+                href="javascript:void(1)"
+                v-on:click="generator"
+                >Generator</a
               >
-              <input class="form-control" v-model="username" />
-            </div>
+            </li>
+            <li class="nav-item" v-bind:class="{ active: history }">
+              <a
+                class="nav-link"
+                href="javascript:void(1)"
+                v-on:click="goHistory"
+                >History</a
+              >
+            </li>
+          </ul>
 
-            <label
-              >E-Mail
-              <a v-if="username" href="javascript:void(1)" v-on:click="copyMail"
-                >({{ fullMail() }})</a
-              ></label
-            >
+          <a
+            class="btn btn-outline-light"
+            href="https://github.com/rexlManu/fastmail"
+            >Github</a
+          >
+        </div>
+      </nav>
 
-            <div class="input-group mb-3">
-              <input type="text" v-model="username" class="form-control" />
-              <select class="custom-select" v-model="mail">
-                <option
-                  v-for="mail in mails"
-                  v-bind:value="mail"
-                  :selected="mail == this.mail"
+      <div class="container pt-5">
+        <div class="mt-5">
+          <div class="card" v-if="!history">
+            <div class="card-header bg-primary text-white">Generate mail</div>
+            <div class="card-body">
+              <div class="form-group">
+                <label
+                  >Username
+                  <span class="text-muted"
+                    >(Has no use except as Fake It replacement)</span
+                  ></label
                 >
-                  {{ mail }}
-                </option>
-              </select>
-            </div>
-            <div class="form-group">
+                <input class="form-control" v-model="username" />
+              </div>
+
               <label
-                >Password
-                <span class="text-muted"
-                  >(Has no use except as Fake It replacement)</span
+                >E-Mail
+                <a
+                  v-if="username"
+                  href="javascript:void(1)"
+                  v-on:click="copyMail"
+                  >({{ fullMail() }})</a
                 ></label
               >
-              <input class="form-control" v-model="password" />
-            </div>
-            <button v-on:click="generate" class="btn btn-primary">
-              Generate
-            </button>
-            <button v-on:click="reset" class="btn btn-danger">Reset</button>
-            <button v-on:click="generate(true)" class="btn btn-outline-success">
-              Generate and save
-            </button>
-            <button v-on:click="save" class="btn btn-success">Save</button>
-            <button v-on:click="fetchMessages" class="btn btn-warning">
-              Fetch messages
-            </button>
 
-            <span class="badge badge-primary"
-              >{{ messages.length }} fetched messages</span
-            >
-
-            <div class="mt-3" v-if="messages.length">
-              <div class="accordion" id="accordionExample">
-                <div class="card" v-for="message in messages">
-                  <div class="card-header" id="headingOne">
-                    <h2 class="mb-0">
-                      <button
-                        class="btn btn-link btn-block text-left"
-                        type="button"
-                        v-on:click="toggle(message)"
-                      >
-                        {{ message.date }} - {{ message.subject}}
-                        <span class="float-right"
-                          >{{ message.sender.name }} <{{ message.sender.address
-                          }}></span
-                        >
-                      </button>
-                    </h2>
-                  </div>
-
-                  <div
-                    id="collapseOne"
-                    class="collapse"
-                    v-bind:class="{ show: message.show }"
+              <div class="input-group mb-3">
+                <input type="text" v-model="username" class="form-control" />
+                <select class="custom-select" v-model="mail">
+                  <option
+                    v-for="mail in mails"
+                    v-bind:value="mail"
+                    :selected="mail == this.mail"
                   >
-                    <div class="card-body" v-html="message.body"></div>
+                    {{ mail }}
+                  </option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label
+                  >Password
+                  <span class="text-muted"
+                    >(Has no use except as Fake It replacement)</span
+                  ></label
+                >
+                <input class="form-control" v-model="password" />
+              </div>
+              <button v-on:click="generate(false)" class="btn btn-primary">
+                Generate
+              </button>
+              <button v-on:click="reset" class="btn btn-danger">Reset</button>
+              <button
+                v-on:click="generate(true)"
+                class="btn btn-outline-success"
+              >
+                Generate and save
+              </button>
+              <button v-on:click="save" class="btn btn-success">Save</button>
+              <button v-on:click="fetchMessages" class="btn btn-warning">
+                Fetch messages
+              </button>
+
+              <span class="badge badge-primary"
+                >{{ messages.length }} fetched messages</span
+              >
+
+              <div class="mt-3" v-if="messages.length">
+                <div class="accordion" id="accordionExample">
+                  <div class="card" v-for="message in messages">
+                    <div class="card-header" id="headingOne">
+                      <h2 class="mb-0">
+                        <button
+                          class="btn btn-link btn-block text-left"
+                          type="button"
+                          v-on:click="toggle(message)"
+                        >
+                          {{ message.date }} - {{ message.subject}}
+                          <span class="float-right"
+                            >{{ message.sender.name }} <{{
+                            message.sender.address }}></span
+                          >
+                        </button>
+                      </h2>
+                    </div>
+
+                    <div
+                      id="collapseOne"
+                      class="collapse"
+                      v-bind:class="{ show: message.show }"
+                    >
+                      <div class="card-body" v-html="message.body"></div>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
+          <div class="card" v-if="!!history">
+            <div class="card-header">History
+            
+            <button class="btn btn-danger float-right" v-on:click="clearHistory">Clear history</button>
+            </div>
+            <div class="card-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th scope="col">Username</th>
+                    <th scope="col">Mail</th>
+                    <th scope="col">Password</th>
+                    <th scope="col"></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="(hist, index) in histories" :key="hist.username">
+                    <th scope="row">{{ hist.username }}</th>
+                    <td>{{ hist.mail }}</td>
+                    <td>{{ hist.password }}</td>
+                    <td>
+                      <button
+                        class="btn btn-success mr-1"
+                        v-on:click="loadHistory(index)"
+                      >
+                        Load</button
+                      ><button
+                        class="btn btn-danger"
+                        v-on:click="deleteHistory(index)"
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
 
-    <footer class="container fixed-bottom">
-      <p>© FastMail 2020 <a class="float-right" href="/imprint">Imprint</a></p>
-    </footer>
+      <footer class="container fixed-bottom">
+        <p>
+          © FastMail 2020 <a class="float-right" href="/imprint">Imprint</a>
+        </p>
+      </footer>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
     <script>
@@ -161,6 +216,11 @@
           mail: null,
           password: null,
           messages: [],
+          history: false,
+          histories: [],
+          names: ["Liam","Noah","William","James","Oliver","Benjamin","Elijah","Lucas","Mason","Logan","Alexander","Ethan","Jacob","Michael","Daniel","Henry","Jackson","Sebastian","Aiden","Matthew","Samuel","David","Joseph","Carter","Owen","Wyatt","John","Jack","Luke","Jayden","Dylan","Grayson","Levi","Isaac","Gabriel","Julian","Mateo","Anthony","Jaxon","Lincoln","Joshua","Christopher","Andrew","Theodore","Caleb","Ryan","Asher","Nathan","Thomas","Leo","Isaiah","Charles","Josiah","Hudson","Christian","Hunter","Connor","Eli","Ezra","Aaron","Landon","Adrian","Jonathan","Nolan","Jeremiah","Easton","Elias","Colton","Cameron","Carson","Robert","Angel","Maverick","Nicholas","Dominic","Jaxson","Greyson","Adam","Ian","Austin","Santiago","Jordan","Cooper","Brayden","Roman","Evan","Ezekiel","Xavier","Jose","Jace","Jameson","Leonardo","Bryson","Axel","Everett","Parker","Kayden","Miles","Sawyer","Jason","Genesis","Saint","Bake","Kairo","Watson","Kenzo","Jaxtyn","Kylo","Dakari","Karsyn","Mordechai","Bowie","Kamdyn","Bode","Ashton","Zaid","Onyx","Benicio","Wells","Archie","Krew","Santana","Zakai","Elian","Aries","Koda","Kabir","Deshawn","Denver","Wallace","Benedict","Crew","Kamryn","Ledger","Korbyn","Marcellus","Imran","Cairo","Huxley","Ralph","Koa","Kaiser","Luka","Harlem","Elon","Sonny","Gatlin","Memphis","Gianni","Brixton","Emma","Olivia","Ava","Isabella","Sophia","Charlotte","Mia","Amelia","Harper","Evelyn","Abigail","Emily","Elizabeth","Mila","Ella","Avery","Sofia","Camila","Aria","Scarlett","Victoria","Madison","Luna","Grace","Chloe","Penelope","Layla","Riley","Zoey","Nora","Lily","Eleanor","Hannah","Lillian","Addison","Aubrey","Ellie","Stella","Natalie","Zoe","Leah","Hazel","Violet","Aurora","Savannah","Audrey","Brooklyn","Bella","Claire","Skylar","Lucy","Paisley","Everly","Anna","Caroline","Nova","Genesis","Emilia","Kennedy","Samantha","Maya","Willow","Kinsley","Naomi","Aaliyah","Elena","Sarah","Ariana","Allison","Gabriella","Alice","Madelyn","Cora","Ruby","Eva","Serenity","Autumn","Adeline","Hailey","Gianna","Valentina","Isla","Eliana","Quinn","Nevaeh","Ivy","Sadie","Piper","Lydia","Alexa","Josephine","Emery","Julia","Delilah","Arianna","Vivian","Kaylee","Sophie","Brielle","Madeline","Meghan","Dior","Adalee","Palmer","Oaklynn","Haisley","Keily","Novah","Yara","Ensley","Kamilah","Amaia","Keilani","Journi","Anais","Aitana","Kailani","Berkley","Ezra","Everlee","Meadow","Zora","Dream","Aislinn","Ailani","Everleigh","Arlette","Kaylani","Oaklyn","Miley","Brynleigh","Alianna","Rosalee","Malani","Kehlani","Elina","Reign","Austyn","Della","Kataleya","Harmoni","Octavia","Antonella","Legacy","Emory","Promise","Kamiyah","Davina","Itzayana","Romina","Memphis","Cairo","Phoenix","Harlem","Charlotte","Denver","Austin","Easton","London","Savannah","Brooklyn","Rey","Kylo","Charlie","Poppy","Kira","Ezra","Alessi","Cassian","Hayes","Brooks","Rachel","Johnathan","Barbara","Frank","Nicole","Jason","Amanda","Christopher","Brittany","Nicholas","Sam","Alex","Emery","Corey","Ari","Cameron","Frankie","Remi","River","Skylar"],
+          lastNames: ["Müller", "Schmidt","homophonen","Schneider","Fischer","Weber","Meyer","Wagner","Becker","Schulz","Hoffmann","Schäfer","Koch","Bauer","Richter","Klein","Wolf","Übername","Schröder","Neumann","Schwarz","Zimmermann","Braun","Krüger","Hofmann","Hartmann","Lange","Schmitt","Werner","Schmitz","Krause","Meier","Lehmann","Schmid","Schulze","Maier","Köhler","Herrmann","König","Walter","Mayer","Huber","Kaiser","Fuchs","Peters","Lang","Scholz","Möller","Weiß","Jung","Hahn","Schubert","Vogel","Friedrich","Keller","Günther","Frank","Berger","Winkler","Roth","Beck","Lorenz","Baumann","Franke","Albrecht","Schuster","Simon","Ludwig","Böhm","Winter","Kraus","Martin","Schumacher","Krämer","Vogt","Stein","Jäger","Otto","Sommer","Groß","Seidel","Heinrich","Brandt","Haas","Schreiber","Graf","Schulte","Dietrich","Ziegler","Kuhn","Kohn","Kühn","Pohl","Engel","Horn","Busch","Bergmann","Thomas","Voigt","Sauer","Arnold","Wolff","Pfeiffer"]
+        
         },
         created() {
           if (location.hash) {
@@ -171,10 +231,14 @@
           } else {
             this.mail = this.mails[0];
           }
+
+          if (localStorage.getItem("history")) {
+            this.histories = JSON.parse(localStorage.getItem("history"));
+          }
         },
         methods: {
           generate(save = false) {
-            this.username = Math.random().toString(36).substr(2, 5);
+            this.username = this.names[Math.floor(Math.random() * this.names.length)]+'.'+this.lastNames[Math.floor(Math.random() * this.lastNames.length)]+Math.floor(Math.random() * 1000) + 1;
             this.password = Math.random().toString(36).substring(2);
             if (save) {
               this.save();
@@ -188,6 +252,12 @@
                 password: this.password,
               })
             );
+
+            this.addToHistory({
+              username: this.username,
+              mail: this.mail,
+              password: this.password,
+            });
           },
           fullMail() {
             return this.username + "@" + this.mail;
@@ -222,6 +292,39 @@
           copyMail() {
             navigator.clipboard.writeText(this.fullMail());
           },
+          goHistory() {
+            this.history = true;
+          },
+          generator() {
+            this.history = false;
+          },
+          addToHistory(credentials) {
+            if (
+              this.histories.filter(
+                (data) => credentials.username == data.username
+              ).length > 0
+            )
+              return;
+            this.histories.push(credentials);
+            this.saveHistory();
+          },
+          saveHistory() {
+            localStorage.setItem("history", JSON.stringify(this.histories));
+          },
+          loadHistory(index) {
+            this.username = this.histories[index].username;
+            this.mail = this.histories[index].mail;
+            this.password = this.histories[index].password;
+            this.history = false
+          },
+          deleteHistory(index) {
+            this.histories.splice(index, 1)
+            this.saveHistory()
+          },
+          clearHistory() {
+            this.histories = []
+            this.saveHistory()
+          }
         },
       });
     </script>
